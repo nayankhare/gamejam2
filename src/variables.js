@@ -1,0 +1,12 @@
+var video;
+var makePrediction;
+var start_game_button;
+var isPredicting = false;
+var model;
+var intervalID;
+var indexFingerX = 0;
+var indexFingerY = 0;
+var magnitude = 0;
+var angle = 0;
+var distanceX = 0;
+var distanceY = 0;

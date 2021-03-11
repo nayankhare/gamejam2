@@ -1,0 +1,24 @@
+<!DOCTYPE html> 
+<head>
+    <title>My page</title>
+    <script src="./src/variables.js"></script>
+    <script src="./src/tf-core.js"></script>
+    <script src="./src/tf-converter.js"></script>
+    <script src="./src/tf-backend-webgl.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu"></script>-->
+
+    <script src="./src/handpose.js"></script>
+
+    <!--<script src="./src/game.js"></script> -->
+    <script src="./src/vector.js"></script>
+</head>
+<body>
+    <div class="video_class" style="float:right">
+        <video id="video_frame" style="width:610px;height:470px;-webkit-transform: scaleX(-1);
+        transform: scaleX(-1);" autoplay="" playsinline=""></video>
+        <button id="startGame_button" class="button start_game" style="display: block;"
+        onclick="toggleGameState()"></button>
+    </div>
+    <script src="./src/main.js"></script>
+</body>
+</html>
