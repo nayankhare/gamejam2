@@ -1,19 +1,21 @@
 import Phaser from 'phaser';
 var fs = require('browserify-fs');
-import backgroundImg from './assets/background.png';
-import car_objectImg from './assets/car_object.png';
-import dot_objectImg from './assets/dot.png';
-import barrier_objectImg from './assets/barrier.png';
+import backgroundImg from './assets/images/background.png';
+import car_objectImg from './assets/images/car_object.png';
+import dot_objectImg from './assets/images/dot.png';
+import barrier_objectImgHorizontal from './assets/images/barrier.png';
+import barrier_objectImgVertical from './assets/images/barrier_vertical.png';
 
 var quadrant = -1;
 var movableobj;
-var SLOWING_FACTOR = 40;
+var SLOWING_FACTOR = 2;
 var dot, barrier_obj;
 
 var topleft_text, coordinate_text;
 var points = 0;
 
-var spawn, spawnbarrier;
+var spawn, spawnbarrier, spawngroupbarrierHor, spawngroupbarrierVer;
+var groupHorizontal, groupVertical;
 
 class MyGame extends Phaser.Scene {
 
@@ -25,7 +27,8 @@ class MyGame extends Phaser.Scene {
         this.load.image('object', car_objectImg);
         this.load.image('background', backgroundImg);
         this.load.image('collectible', dot_objectImg);
-        this.load.image('barrier', barrier_objectImg);
+        this.load.image('barrierHor', barrier_objectImgHorizontal);
+        this.load.image('barrierVer', barrier_objectImgVertical);
     }
       
     create () {
@@ -43,13 +46,61 @@ class MyGame extends Phaser.Scene {
         } 
 
         spawnbarrier = (barrierobject) => {
-            barrier_obj = this.physics.add.sprite(Phaser.Math.Between(50, 750),Phaser.Math.Between(50, 550),barrierobject);
-            this.physics.add.collider(movableobj, barrier_obj, this.barrier_collision_fn );
-            barrier_obj.setScale(0.1);
+            barrier_obj = this.physics.add.image(Phaser.Math.Between(50, 750),Phaser.Math.Between(50, 550),barrierobject).setImmovable().setBounce(0);
+            //this.physics.add.collider(movableobj, barrier_obj, this.barrier_collision_fn );
         }
 
+        spawngroupbarrierHor = (barrier_obj) => {
+             groupHorizontal = this.physics.add.staticGroup({
+                key: barrier_obj,
+                frameQuantity: 4,
+                immovable:true,
+            });
+
+            var children = groupHorizontal.getChildren();
+
+            for(var i = 0; i<children.length; i++) {
+                var x = Phaser.Math.Between(50, 750);
+                var y = Phaser.Math.Between(50, 550);
+                //var anglebarrier = Phaser.Math.Between(-Math.PI, Math.PI);
+
+                children[i].setPosition(x,y);
+                //children[i].rotation = anglebarrier;
+                
+            }
+
+            groupHorizontal.refresh();
+        }
+
+        spawngroupbarrierVer = (barrier_obj) => {
+            groupVertical = this.physics.add.staticGroup({
+               key: barrier_obj,
+               frameQuantity: 4,
+               immovable:true,
+           });
+
+           var children = groupVertical.getChildren();
+
+           for(var i = 0; i<children.length; i++) {
+               var x = Phaser.Math.Between(50, 750);
+               var y = Phaser.Math.Between(50, 550);
+               //var anglebarrier = Phaser.Math.Between(-Math.PI, Math.PI);
+
+               children[i].setPosition(x,y);
+               //children[i].rotation = anglebarrier;
+               
+           }
+
+           groupVertical.refresh();
+       }
+        
         spawn('collectible');
-        spawnbarrier('barrier');
+        spawngroupbarrierHor('barrierHor');
+        spawngroupbarrierVer('barrierVer');
+        
+        //spawnbarrier('barrier');
+
+        
 
     }
 
@@ -57,6 +108,25 @@ class MyGame extends Phaser.Scene {
 
 
     update() {
+        this.physics.world.collide(movableobj, groupHorizontal, function() {
+            console.log("Collision");
+            setTimeout(function() {
+                points -= 10; 
+                topleft_text.setText(points + " points");
+            }, 1000);
+        });
+
+        this.physics.world.collide(movableobj, groupVertical, function() {
+            console.log("Collision");
+            setTimeout(function() {
+                points -= 10; 
+                topleft_text.setText(points + " points");
+            }, 1000);
+        });
+
+        // this.physics.world.collide(movableobj, barrier_obj, function () {
+        //     console.log('hit?');
+        // });
         
         if(distanceX > 0) {
             if(distanceY > 0) quadrant = 1;
@@ -73,26 +143,34 @@ class MyGame extends Phaser.Scene {
         //angle = Math.abs(angle);
     
         if(quadrant == 1) {
-            movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
-            movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
+            movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
+            movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
+            // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
+            // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
             movableobj.angle = -angleindegrees;
             
             
         }
         else if(quadrant == 2) {
-            movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
-            movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
+            movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
+            movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
+            // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
+            // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
             movableobj.angle = -angleindegrees;
     
         }
         else if(quadrant == 3) {
-            movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
-            movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
+            movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
+            movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
+            // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
+            // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
             movableobj.angle = -angleindegrees;
         }
         else {
-            movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
-            movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
+            movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
+            movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
+            // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
+            // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
             movableobj.angle = -angleindegrees;
         }
     
@@ -140,7 +218,10 @@ const config = {
     width: 800,
     height: 600,
     physics: {
-        default: 'arcade'    
+        default: 'arcade',
+        // arcade : {
+        //     debug: true
+        // }
     },
     scene: MyGame
 };
