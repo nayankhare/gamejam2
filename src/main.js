@@ -77,3 +77,7 @@ function toggleGameState() {
   }
 
 }
+
+function adjustBarrierWidth() {
+  console.log("Adjusted");
+}
