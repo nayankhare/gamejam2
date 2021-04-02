@@ -17,6 +17,7 @@ var movableobj;
 var SLOWING_FACTOR = 2;
 var dot, barrier_obj;
 var timer = 0, current_health = 100;
+var push_needed = 0;
 
 let infoArray = [];
 
@@ -50,7 +51,7 @@ class MyGame extends Phaser.Scene {
         console.log(movableobj);
 
         topleft_text = this.add.text(10,10,"0 points",{ fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' } );
-        coordinate_text = this.add.text(10, 30, "X: 350 Y: 350",{ fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+        coordinate_text = this.add.text(10, 30, "X: "+movableobj.x.toFixed(2)+"  Y: "+ movableobj.y.toFixed(2),{ fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
         health_text = this.add.text(10, 50, "Health: "+current_health, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' } );
 
         spawn = (spawnobjectname) => {
@@ -88,12 +89,12 @@ class MyGame extends Phaser.Scene {
         }
 
         addToDB = () => {
-            const dbname = "Aditya";
+            const dbname = "gamejamdb";
             const dbrequest = window.indexedDB.open(dbname);
             dbrequest.onupgradeneeded = () => {
                 let db = dbrequest.result;
-                let store = db.createObjectStore("data", {autoIncrement: true});
-
+                let store = db.createObjectStore("data1", {autoIncrement: true});
+                console.log(infoArray.length);
                 for(var i = 0; i<infoArray.length; i++) {
                     store.put({TimeStamp: infoArray[i].timeStamp, xCoord: infoArray[i].xCoord, yCoord:infoArray[i].yCoord, collision: infoArray[i].collision});
                 }
@@ -148,12 +149,19 @@ class MyGame extends Phaser.Scene {
 
 
     update(time, delta) {
+        if(push_needed == 1) {
+            push_needed = 0;
+            addToDB();
+        }
         if(isPredicting) {
             timer += delta;
             while(timer > 1000) {
                 timer -=1000;
-                current_health -=5;
-                health_text.setText("Health: "+ current_health);
+                //current_health -=5;
+                //health_text.setText("Health: "+ current_health);
+                
+                
+
             }
             this.physics.world.collide(movableobj, groupHorizontal, function() {
                 //movableobj.setVelocityY(0);
@@ -162,6 +170,15 @@ class MyGame extends Phaser.Scene {
                     points -= 10; 
                     topleft_text.setText(points + " points");
                 }, 1000);
+                let singleInfo = {
+                    "timeStamp": Date.now(),
+                    "xCoord": movableobj.x.toFixed(2),
+                    "yCoord": movableobj.y.toFixed(2),
+                    "collision": "1"
+                }
+                infoArray.push(singleInfo);
+                push_needed = 1;
+                
             });
 
             this.physics.world.collide(movableobj, groupVertical, function() {
@@ -239,18 +256,27 @@ class MyGame extends Phaser.Scene {
 
             coordinate_text.setText("X: " + movableobj.x.toFixed(2) + " Y: "+movableobj.y.toFixed(2));
             let singleInfo = {
-                "timeStamp": time,
+                "timeStamp": Date.now(),
                 "xCoord": movableobj.x.toFixed(2),
                 "yCoord": movableobj.y.toFixed(2),
                 "collision": "0"
             }
-            infoArray.push(singleInfo);
+            infoArray.push(singleInfo); 
+            
+            
         }
     }
 
     removeObj(movableobj, dotobj) {
         //  dotgroup.killAndHide(dotobj);
             console.log("Consumed!");
+            let singleInfo = {
+                "timeStamp": Date.now(),
+                "xCoord": movableobj.x.toFixed(2),
+                "yCoord": movableobj.y.toFixed(2),
+                "collision": "0"
+            }
+            infoArray.push(singleInfo);
             addToDB();
             points += 10;
             current_health += 15;
@@ -265,12 +291,13 @@ class MyGame extends Phaser.Scene {
             console.log("Collided!");
             points -= 10;
             let singleInfo = {
-                "timeStamp": time,
+                "timeStamp": Date.now(),
                 "xCoord": movableobj.x.toFixed(2),
                 "yCoord": movableobj.y.toFixed(2),
                 "collision": "1"
             }
-            infoArray(singleInfo);
+            infoArray.push(singleInfo);
+            addtoDB();
             topleft_text.setText(points + " points");
     }
 
