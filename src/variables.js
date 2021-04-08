@@ -10,3 +10,5 @@ var magnitude = 0;
 var angle = 0;
 var distanceX = 0;
 var distanceY = 0;
+var normalizedX = 0;
+var normalizedY = 0;

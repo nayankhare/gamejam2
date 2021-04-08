@@ -46,7 +46,7 @@ class MyGame extends Phaser.Scene {
       
     create () {
         this.add.image(400,300,'background');
-        movableobj = this.physics.add.image(100,350, 'object');
+        movableobj = this.physics.add.image(100,300, 'object');
         movableobj.setCircle(15, 10, -2.5);
         console.log(movableobj);
 
@@ -148,6 +148,125 @@ class MyGame extends Phaser.Scene {
     
 
 
+    // update(time, delta) {
+    //     if(push_needed == 1) {
+    //         push_needed = 0;
+    //         addToDB();
+    //     }
+    //     if(isPredicting) {
+    //         timer += delta;
+    //         while(timer > 1000) {
+    //             timer -=1000;
+    //             //current_health -=5;
+    //             //health_text.setText("Health: "+ current_health);
+                
+                
+
+    //         }
+    //         this.physics.world.collide(movableobj, groupHorizontal, function() {
+    //             //movableobj.setVelocityY(0);
+    //             console.log("Collision");
+    //             setTimeout(function() {
+    //                 points -= 10; 
+    //                 topleft_text.setText(points + " points");
+    //             }, 1000);
+    //             let singleInfo = {
+    //                 "timeStamp": Date.now(),
+    //                 "xCoord": movableobj.x.toFixed(2),
+    //                 "yCoord": movableobj.y.toFixed(2),
+    //                 "collision": "1"
+    //             }
+    //             infoArray.push(singleInfo);
+    //             push_needed = 1;
+                
+    //         });
+
+    //         this.physics.world.collide(movableobj, groupVertical, function() {
+    //             console.log("Collision");
+    //             //movableobj.setVelocityX(0);
+    //             setTimeout(function() {
+    //                 points -= 10; 
+    //                 topleft_text.setText(points + " points");
+    //             }, 1000);
+    //         });
+
+    //         // this.physics.world.collide(movableobj, barrier_obj, function () {
+    //         //     console.log('hit?');
+    //         // });
+            
+    //         if(distanceX > 0) {
+    //             if(distanceY > 0) quadrant = 1;
+    //             else quadrant = 4;
+    //         } 
+    //         else {
+    //             if(distanceY > 0) quadrant = 2;
+    //             else quadrant = 3;
+    //         }
+            
+    //         var angleindegrees = angle*(180/Math.PI);
+            
+            
+    //         //angle = Math.abs(angle);
+        
+    //         if(quadrant == 1) {
+    //             movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
+    //             movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
+    //             // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
+    //             // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
+    //             movableobj.angle = -angleindegrees;
+                
+                
+    //         }
+    //         else if(quadrant == 2) {
+    //             movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
+    //             movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
+    //             // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
+    //             // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
+    //             movableobj.angle = -angleindegrees;
+        
+    //         }
+    //         else if(quadrant == 3) {
+    //             movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
+    //             movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
+    //             // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
+    //             // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
+    //             movableobj.angle = -angleindegrees;
+    //         }
+    //         else {
+    //             movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
+    //             movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
+    //             // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
+    //             // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
+    //             movableobj.angle = -angleindegrees;
+    //         }
+        
+        
+    //         if(movableobj.x > 800) {
+    //             movableobj.x = 0;
+    //         }
+    //         else if(movableobj.x < 0) {
+    //             movableobj.x = 800;
+    //         }
+    //         if(movableobj.y > 600) {
+    //             movableobj.y = 0;
+    //         }
+    //         else if(movableobj.y < 0) {
+    //             movableobj.y = 600;
+    //         }
+
+    //         coordinate_text.setText("X: " + movableobj.x.toFixed(2) + " Y: "+movableobj.y.toFixed(2));
+    //         let singleInfo = {
+    //             "timeStamp": Date.now(),
+    //             "xCoord": movableobj.x.toFixed(2),
+    //             "yCoord": movableobj.y.toFixed(2),
+    //             "collision": "0"
+    //         }
+    //         infoArray.push(singleInfo); 
+            
+            
+    //     }
+    // }
+
     update(time, delta) {
         if(push_needed == 1) {
             push_needed = 0;
@@ -166,6 +285,7 @@ class MyGame extends Phaser.Scene {
             this.physics.world.collide(movableobj, groupHorizontal, function() {
                 //movableobj.setVelocityY(0);
                 console.log("Collision");
+                isPredicting = false;
                 setTimeout(function() {
                     points -= 10; 
                     topleft_text.setText(points + " points");
@@ -178,6 +298,8 @@ class MyGame extends Phaser.Scene {
                 }
                 infoArray.push(singleInfo);
                 push_needed = 1;
+                alert("Game over!");
+                location.reload();
                 
             });
 
@@ -194,66 +316,10 @@ class MyGame extends Phaser.Scene {
             //     console.log('hit?');
             // });
             
-            if(distanceX > 0) {
-                if(distanceY > 0) quadrant = 1;
-                else quadrant = 4;
-            } 
-            else {
-                if(distanceY > 0) quadrant = 2;
-                else quadrant = 3;
-            }
-            
-            var angleindegrees = angle*(180/Math.PI);
-            
-            
-            //angle = Math.abs(angle);
-        
-            if(quadrant == 1) {
-                movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
-                movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
-                // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
-                // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
-                movableobj.angle = -angleindegrees;
-                
-                
-            }
-            else if(quadrant == 2) {
-                movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
-                movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
-                // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
-                // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
-                movableobj.angle = -angleindegrees;
-        
-            }
-            else if(quadrant == 3) {
-                movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
-                movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
-                // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
-                // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
-                movableobj.angle = -angleindegrees;
-            }
-            else {
-                movableobj.setVelocityX(magnitude/SLOWING_FACTOR*Math.cos(angle));
-                movableobj.setVelocityY(-magnitude/SLOWING_FACTOR*Math.sin(angle));
-                // movableobj.x = (movableobj.x + (magnitude/SLOWING_FACTOR)*Math.cos(angle));
-                // movableobj.y -= (magnitude/SLOWING_FACTOR)*Math.sin(angle);
-                movableobj.angle = -angleindegrees;
-            }
-        
-        
-            if(movableobj.x > 800) {
-                movableobj.x = 0;
-            }
-            else if(movableobj.x < 0) {
-                movableobj.x = 800;
-            }
-            if(movableobj.y > 600) {
-                movableobj.y = 0;
-            }
-            else if(movableobj.y < 0) {
-                movableobj.y = 600;
-            }
-
+            //movableobj.x = normalizedX*800;
+            movableobj.x = indexFingerX*800/430+ 1004;
+            //movableobj.y = normalizedY*600;
+            movableobj.y = indexFingerY*600/220 -463.63;
             coordinate_text.setText("X: " + movableobj.x.toFixed(2) + " Y: "+movableobj.y.toFixed(2));
             let singleInfo = {
                 "timeStamp": Date.now(),
@@ -266,6 +332,7 @@ class MyGame extends Phaser.Scene {
             
         }
     }
+
 
     removeObj(movableobj, dotobj) {
         //  dotgroup.killAndHide(dotobj);

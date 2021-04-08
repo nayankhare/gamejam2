@@ -48,8 +48,16 @@ function make_prediction() {
       var preds = val[0]
       const keypoints = preds.landmarks;
       const [x, y, z] = keypoints[5];
-      indexFingerX = x;
-      indexFingerY = y;
+      var avgX = 0;
+      var avgY = 0;
+      for(var i=0; i<21; i++) {
+        avgX += keypoints[i][0];
+        avgY += keypoints[i][1];
+      }
+      avgX /= 21;
+      avgY /= 21;
+      indexFingerX = avgX;
+      indexFingerY = avgY;
       console.log(`${indexFingerX} and ${indexFingerY}`);  
       createVector();
       }
