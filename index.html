@@ -11,16 +11,41 @@
 
     <!--<script src="./src/game.js"></script> -->
     <script src="./src/vector.js"></script>
+
+
+    <!-- CSS-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <div class="video_class" style="float:right">
-        <video id="video_frame" style="width:610px;height:470px;-webkit-transform: scaleX(-1);
-        transform: scaleX(-1);" autoplay="" playsinline=""></video>
-        <button id="startGame_button" class="button start_game" style="display: block;"
-        onclick="toggleGameState()"></button>
+    <div class="video_class row">
 
-        <input type="text" id="barrier_width_txtbox" name="barrier_width" />
-        <button id="barrier_width_btn" onclick="adjustBarrierWidth()">Adjust</button>
+        <div class="col-4">
+            <video id="video_frame" style="width:610px;height:470px;-webkit-transform: scaleX(-1);
+            transform: scaleX(-1);display: none;" autoplay="" playsinline=""></video> 
+            Barrier Seperation : 
+            <input type="text" id="barrier_width_txtbox" name="barrier_width" />
+            <button id="barrier_width_btn" >Change</button>
+        </div>
+
+
+        <div class="col-4">
+            Moving Object Scale : 
+            <input type="text" id="moving_object_txtbox" name="moving_object_scale" />
+            <button id="moving_object_btn">Change</button>
+        </div>
+
+        <div class="col-4">
+            Fixed Object Scale : 
+            <input type="text" id="fixed_object_txtbox" name="fixed_object_scale" />
+            <button id="fixed_object_btn">Change</button>
+        </div>
+    </div>
+    <div class="row" style="margin-left: 0px;">
+        <button id="startGame_button" class="button start_game" style="display: block;"
+            onclick="toggleGameState()"></button>
     </div>
     <script src="./src/main.js"></script>
 </body>

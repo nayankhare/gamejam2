@@ -1,13 +1,19 @@
 import Phaser from 'phaser';
-var fs = require('browserify-fs');
+const fs = require('fs');
 import backgroundImg from './assets/images/background.png';
 import car_objectImg from './assets/images/car_object.png';
 import dot_objectImg from './assets/images/dot.png';
 import barrier_objectImgHorizontal from './assets/images/barrier.png';
 import barrier_objectImgVertical from './assets/images/barrier_vertical.png';
 
-var adjustbtn = document.getElementById("barrier_width_btn");
-var inputText = document.getElementById("barrier_width_txtbox");
+var adjustWidthbtn = document.getElementById("barrier_width_btn");
+var inputWidthText = document.getElementById("barrier_width_txtbox");
+
+var adjustScaleFixedObj = document.getElementById("fixed_object_btn");
+var inputScaleFixedText = document.getElementById("fixed_object_txtbox");
+
+var adjustScaleMovingObj = document.getElementById("moving_object_btn");
+var inputScaleMovingText = document.getElementById("moving_object_txtbox");
 
 
 
@@ -28,6 +34,14 @@ var spawn, spawnbarrier, spawngroupbarrierHor, spawngroupbarrierVer, addToDB;
 var groupHorizontal, groupVertical;
 
 var barrierSeperation = 150;
+var FixedScale = 1;
+var MovingScale = 1;
+
+var prevCoordX = 0;
+var prevCoordY = 0;
+
+var gameWidth = 0;
+var gameHeight = 0;
 
 
 class MyGame extends Phaser.Scene {
@@ -42,12 +56,20 @@ class MyGame extends Phaser.Scene {
         this.load.image('collectible', dot_objectImg);
         this.load.image('barrierHor', barrier_objectImgHorizontal);
         this.load.image('barrierVer', barrier_objectImgVertical);
+        gameWidth = this.cameras.main.width;
+        gameHeight = this.cameras.main.height;
+        
+
+        
     }
       
     create () {
-        this.add.image(400,300,'background');
-        movableobj = this.physics.add.image(100,300, 'object');
-        movableobj.setCircle(15, 10, -2.5);
+        //this.add.image(gameWidth/2,gameHeight/2,'background');
+        this.cameras.main.setBackgroundColor(0xadd8e6);
+        movableobj = this.physics.add.image(100,gameHeight/2, 'object');
+        movableobj.setScale(MovingScale);
+
+       // movableobj.setCircle(15, 10, -2.5);
         console.log(movableobj);
 
         topleft_text = this.add.text(10,10,"0 points",{ fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' } );
@@ -55,14 +77,19 @@ class MyGame extends Phaser.Scene {
         health_text = this.add.text(10, 50, "Health: "+current_health, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' } );
 
         spawn = (spawnobjectname) => {
-            dot = this.physics.add.sprite(Phaser.Math.Between(50, 750),Phaser.Math.Between(50, 550),spawnobjectname);
+            dot = this.physics.add.sprite(gameWidth-100,gameHeight/2,spawnobjectname);
             this.physics.add.overlap(movableobj, dot, this.removeObj);
+            dot.setScale(FixedScale);
         } 
 
         spawnbarrier = (barrierobject) => {
-            barrier_obj = this.physics.add.image(Phaser.Math.Between(50, 750),Phaser.Math.Between(50, 550),barrierobject).setImmovable().setBounce(0);
+            barrier_obj = this.physics.add.image(Phaser.Math.Between(50, gameWidth-50),Phaser.Math.Between(50, gameHeight-50),barrierobject).setImmovable().setBounce(0);
             //this.physics.add.collider(movableobj, barrier_obj, this.barrier_collision_fn );
         }
+
+        
+
+        //movableobj.setScale(4);
 
         spawngroupbarrierHor = (barrier_obj) => {
              groupHorizontal = this.physics.add.staticGroup({
@@ -74,16 +101,19 @@ class MyGame extends Phaser.Scene {
             var children = groupHorizontal.getChildren();
 
             for(var i = 0; i<children.length; i++) {
-                var x = Phaser.Math.Between(50, 750);
-                var y = Phaser.Math.Between(50, 550);
+                var x = Phaser.Math.Between(50, gameWidth-50);
+                var y = Phaser.Math.Between(50, gameHeight-50);
                 //var anglebarrier = Phaser.Math.Between(-Math.PI, Math.PI);
 
                 children[i].setPosition(x,y);
                 //children[i].rotation = anglebarrier;
                 
             }
-            children[0].setPosition(400, 300 - (barrierSeperation/2));
-            children[1].setPosition(400, 300+ barrierSeperation/2);
+            children[0].setPosition(gameWidth/2, gameHeight/2 - (barrierSeperation/2));
+            children[1].setPosition(gameWidth/2, gameHeight/2+ barrierSeperation/2);
+            children[0].setScale(2,1);
+            children[1].setScale(2,1);
+            
 
             groupHorizontal.refresh();
         }
@@ -102,11 +132,33 @@ class MyGame extends Phaser.Scene {
             }
         }
 
-        adjustbtn.addEventListener("click", function() {
-            if(!isNaN(inputText.value) && parseInt(inputText.value) > 0) {
-                barrierSeperation = parseInt(inputText.value);
+        adjustWidthbtn.addEventListener("click", function() {
+            if(!isNaN(inputWidthText.value) && parseInt(inputWidthText.value) > 0) {
+                barrierSeperation = parseInt(inputWidthText.value);
                 
                 console.log(barrierSeperation);
+                game.destroy(true,false);
+                game = new Phaser.Game(config);
+            }
+            
+        });
+
+        adjustScaleFixedObj.addEventListener("click", function() {
+            if(!isNaN(inputScaleFixedText.value) && parseInt(inputScaleFixedText.value) > 0) {
+                FixedScale  = parseInt(inputScaleFixedText.value);
+                
+                console.log("Fixed Object Scale changed!");
+                game.destroy(true,false);
+                game = new Phaser.Game(config);
+            }
+            
+        });
+
+        adjustScaleMovingObj.addEventListener("click", function() {
+            if(!isNaN(inputScaleMovingText.value) && parseInt(inputScaleMovingText.value) > 0) {
+                MovingScale = parseInt(inputScaleMovingText.value);
+                
+                console.log("Moving Object Scale changed!");
                 game.destroy(true,false);
                 game = new Phaser.Game(config);
             }
@@ -274,8 +326,10 @@ class MyGame extends Phaser.Scene {
         }
         if(isPredicting) {
             timer += delta;
-            while(timer > 1000) {
-                timer -=1000;
+            while(timer > 300) {
+                timer -=300;
+                prevCoordX = movableobj.x;
+                prevCoordY = movableobj.y
                 //current_health -=5;
                 //health_text.setText("Health: "+ current_health);
                 
@@ -294,6 +348,8 @@ class MyGame extends Phaser.Scene {
                     "timeStamp": Date.now(),
                     "xCoord": movableobj.x.toFixed(2),
                     "yCoord": movableobj.y.toFixed(2),
+                    "fixedObjScale" : FixedScale,
+                    "movingObjScale" : MovingScale,
                     "collision": "1"
                 }
                 infoArray.push(singleInfo);
@@ -303,6 +359,7 @@ class MyGame extends Phaser.Scene {
                 
             });
 
+            
             this.physics.world.collide(movableobj, groupVertical, function() {
                 console.log("Collision");
                 //movableobj.setVelocityX(0);
@@ -317,14 +374,36 @@ class MyGame extends Phaser.Scene {
             // });
             
             //movableobj.x = normalizedX*800;
-            movableobj.x = indexFingerX*800/430+ 1004;
+            movableobj.x = (indexFingerX+540)*gameWidth/(430);
             //movableobj.y = normalizedY*600;
-            movableobj.y = indexFingerY*600/220 -463.63;
+            movableobj.y = (indexFingerY-170)*gameHeight/220;
+
+            
+            
+            //Find Angle of the object
+            var diffX = movableobj.x - prevCoordX;
+            var diffY = movableobj.y - prevCoordY;
+            var ang = Math.atan2(diffY, diffX);
+
+            if(diffX > 0) {
+                if(distanceY > 0) quadrant = 1;
+                else quadrant = 4;
+            } 
+            else {
+                if(diffY > 0) quadrant = 2;
+                else quadrant = 3;
+            }
+                        
+            //movableobj.angle = -1*ang*(180/Math.PI);
+
+            
             coordinate_text.setText("X: " + movableobj.x.toFixed(2) + " Y: "+movableobj.y.toFixed(2));
             let singleInfo = {
                 "timeStamp": Date.now(),
                 "xCoord": movableobj.x.toFixed(2),
                 "yCoord": movableobj.y.toFixed(2),
+                "fixedObjScale" : FixedScale,
+                "movingObjScale" : MovingScale,
                 "collision": "0"
             }
             infoArray.push(singleInfo); 
@@ -341,6 +420,8 @@ class MyGame extends Phaser.Scene {
                 "timeStamp": Date.now(),
                 "xCoord": movableobj.x.toFixed(2),
                 "yCoord": movableobj.y.toFixed(2),
+                "fixedObjScale" : FixedScale,
+                "movingObjScale" : MovingScale,
                 "collision": "0"
             }
             infoArray.push(singleInfo);
@@ -352,6 +433,8 @@ class MyGame extends Phaser.Scene {
             dotobj.body.enable = false;
             dotobj.destroy();
             spawn('collectible');
+            alert("Target Achieved");
+            location.reload();
     }
 
     barrier_collision_fn(movableobj, barrierobj) {
@@ -361,6 +444,8 @@ class MyGame extends Phaser.Scene {
                 "timeStamp": Date.now(),
                 "xCoord": movableobj.x.toFixed(2),
                 "yCoord": movableobj.y.toFixed(2),
+                "fixedObjScale" : FixedScale,
+                "movingObjScale" : MovingScale,
                 "collision": "1"
             }
             infoArray.push(singleInfo);
@@ -375,17 +460,25 @@ class MyGame extends Phaser.Scene {
 }
 
 
+const myCustomCanvas = document.createElement('canvas');
+
+myCustomCanvas.id = 'myCustomCanvas';
+
+document.body.prepend(myCustomCanvas);
+
+//document.body.appendChild(myCustomCanvas);
 
 
 const config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    type: Phaser.CANVAS,
+    width: 1450,
+    height: 700,
+    canvas: document.getElementById('myCustomCanvas'),
     physics: {
         default: 'arcade',
-        //arcade : {
+        // arcade : {
         //    debug: true
-        //}
+        // }
     },
     scene: MyGame
 };
